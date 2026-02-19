@@ -1,8 +1,8 @@
-1. Debounce a search input
-Question:
+## 1. Debounce a search input
+### Question:
 You have a search <input> that calls an API on every input event, causing too many calls. Implement a debounce function so the API is called only if the user stops typing for 500ms.
 
-Answer (one possible solution):
+### Answer (one possible solution):
 
 js
 function debounce(fn, delay) {
