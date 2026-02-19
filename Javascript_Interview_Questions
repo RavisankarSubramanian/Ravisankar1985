@@ -1,0 +1,245 @@
+1. Debounce a search input
+Question:
+You have a search <input> that calls an API on every input event, causing too many calls. Implement a debounce function so the API is called only if the user stops typing for 500ms.
+
+Answer (one possible solution):
+
+js
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// usage
+const handleSearch = debounce((e) => {
+  const query = e.target.value;
+  fetch(`/api/search?q=${encodeURIComponent(query)}`);
+}, 500);
+
+input.addEventListener('input', handleSearch);
+This works by clearing any previous timer and creating a new one, so only the last call after the pause executes.
+​
+​
+
+2. Fix closure bug in loop
+Question:
+What will this code print, and how do you fix it to print 0,1,2,3,4 with a delay?
+
+js
+for (var i = 0; i < 5; i++) {
+  setTimeout(() => console.log(i), 1000);
+}
+Answer:
+It prints 5 five times, because var is function-scoped and all callbacks share the same i which ends as 5.
+​
+Two fixes:
+
+Using let:
+
+js
+for (let i = 0; i < 5; i++) {
+  setTimeout(() => console.log(i), 1000);
+}
+Using IIFE:
+
+js
+for (var i = 0; i < 5; i++) {
+  (function (x) {
+    setTimeout(() => console.log(x), 1000);
+  })(i);
+}
+3. Explain event loop output
+Question:
+Predict the output order:
+
+js
+console.log('start');
+
+setTimeout(() => {
+  console.log('timeout');
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log('promise');
+});
+
+console.log('end');
+Answer:
+Output order:
+
+start
+
+end
+
+promise
+
+timeout
+
+Reason: synchronous logs run first, then microtasks (Promise then), then macrotasks (setTimeout).
+
+4. Shallow vs deep copy bug
+Question:
+You copy an object and modify the copy, but original also changes:
+
+js
+const user = { name: 'A', skills: ['js', 'react'] };
+const copy = { ...user };
+copy.skills.push('node');
+
+console.log(user.skills); // ?
+a) What is printed?
+b) How to avoid this?
+
+Answer:
+a) It prints ['js','react','node'] because spread makes a shallow copy, and skills array reference is shared.
+​
+b) Deep copy nested structures, e.g.:
+
+js
+const copy = { 
+  ...user, 
+  skills: [...user.skills] 
+};
+or structuredClone(user) in modern browsers.
+​
+
+5. Handle API error with async/await
+Question:
+Write an async function loadUser that fetches /api/user, logs the JSON on success, and logs "Failed to load" when anything goes wrong.
+
+Answer:
+
+js
+async function loadUser() {
+  try {
+    const res = await fetch('/api/user');
+    if (!res.ok) throw new Error('Network error');
+    const data = await res.json();
+    console.log(data);
+  } catch (err) {
+    console.log('Failed to load');
+  }
+}
+This uses try/catch with async/await to handle both network and parsing errors.
+
+6. Prevent form refresh
+Question:
+You have a form that reloads the page on submit, but you want to handle it with JavaScript only. Show how to stop the default behavior.
+
+Answer:
+
+js
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  // handle form data here
+});
+e.preventDefault() stops the browser’s default page reload on submit.
+​
+
+7. Fix NaN result
+Question:
+The following sometimes logs NaN when user types invalid values:
+
+js
+function add(a, b) {
+  return Number(a) + Number(b);
+}
+
+console.log(add(inputA.value, inputB.value));
+How do you guard against invalid inputs and log "Invalid input" instead?
+
+Answer:
+
+js
+function add(a, b) {
+  const x = Number(a);
+  const y = Number(b);
+  if (Number.isNaN(x) || Number.isNaN(y)) {
+    console.log('Invalid input');
+    return;
+  }
+  console.log(x + y);
+}
+This checks for NaN before using the numbers.
+​
+
+8. Optional chaining in a scenario
+Question:
+Sometimes user.profile is undefined, and this code throws an error:
+
+js
+console.log(user.profile.address.city);
+Show a safe way to read city without throwing, and log "Unknown" if it’s missing.
+
+Answer:
+
+js
+const city = user?.profile?.address?.city ?? 'Unknown';
+console.log(city);
+Optional chaining avoids errors when any intermediate property is undefined, and ?? provides a default.
+​
+
+9. Throttle a scroll handler
+Question:
+You have a heavy scroll handler that causes jank. Implement a simple throttle(fn, delay) so the function runs at most once every 200ms.
+
+Answer:
+
+js
+function throttle(fn, delay) {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= delay) {
+      last = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+window.addEventListener('scroll', throttle(() => {
+  console.log('scroll event');
+}, 200));
+This uses a timestamp to ensure the function only runs after the delay has passed.
+​
+
+10. Fix this in callback
+Question:
+The following logs undefined instead of the user’s name:
+
+js
+const user = {
+  name: 'A',
+  sayHi() {
+    setTimeout(function () {
+      console.log(this.name);
+    }, 1000);
+  }
+};
+
+user.sayHi();
+a) Why is this wrong here?
+b) Fix it.
+
+Answer:
+a) The regular function inside setTimeout is called with this set to window (or undefined in strict mode), not the user object.
+​
+b) Use an arrow function or bind:
+
+js
+sayHi() {
+  setTimeout(() => {
+    console.log(this.name);
+  }, 1000);
+}
+
+// or
+sayHi() {
+  setTimeout(function () {
+    console.log(this.name);
+  }.bind(this), 1000);
+}
+If you tell me your target level (beginner / intermediate / advanced) and whether you want more on topics like event loop, DOM, or async/await, I can generate another focused set.
