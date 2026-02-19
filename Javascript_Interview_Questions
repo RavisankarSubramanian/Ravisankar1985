@@ -242,4 +242,149 @@ sayHi() {
     console.log(this.name);
   }.bind(this), 1000);
 }
+11. Using call, apply, bind
+Question:
+What is printed in each case?
+
+js
+function greet(greeting, punctuation) {
+  console.log(greeting + ' ' + this.name + punctuation);
+}
+
+const user = { name: 'Charlie' };
+
+greet.call(user, 'Hello', '!');
+greet.apply(user, ['Hi', '!!']);
+const bound = greet.bind(user, 'Hey');
+bound('!!!');
+Answer:
+All three lines print with this set to user (so name "Charlie"):
+​
+
+call: "Hello Charlie!"
+
+apply: "Hi Charlie!!"
+
+bind: "Hey Charlie!!!"
+
+call / apply invoke immediately with a chosen this; bind creates a new function with this permanently bound.
+
+12. Your page is SEO critical, and content changes once per day. Which rendering strategy would you choose and why? 
+
+For an SEO-critical page where content changes once per day, I would choose: 
+
+SSG (Static Site Generation) with ISR (Incremental Static Regeneration) in Next.js 
+
+Why This Is the Best Choice 
+
+1️⃣ SEO Critical 
+
+Search engines need: 
+
+Fully rendered HTML 
+
+Fast page load 
+
+No client-side rendering delay 
+
+👉 SSG generates HTML at build time, so the page is: 
+
+Pre-rendered 
+
+Crawlable 
+
+Extremely fast 
+
+Perfect for SEO. 
+
+2️⃣ Content Changes Once Per Day 
+
+If content updates daily, rebuilding the entire app every time is inefficient. 
+
+That’s where ISR helps 👇 
+
+🔄 ISR (Incremental Static Regeneration) 
+
+With ISR: 
+
+Page is statically generated 
+
+After a defined time (e.g., 24 hours), Next.js regenerates the page in the background 
+
+Users always get fast static pages 
+
+Content updates automatically 
+
+Example: 
+
+export async function getStaticProps() { 
+ const data = await fetchData(); 
+ 
+ return { 
+   props: { data }, 
+   revalidate: 86400, // 24 hours 
+ }; 
+} 
+
+🚫 Why Not Other Options? 
+
+❌ CSR (Client-Side Rendering) 
+
+Bad for SEO 
+
+Content loads after JavaScript 
+
+Slower first paint 
+
+❌ SSR (Server-Side Rendering) 
+
+Good for SEO 
+
+But runs on every request 
+
+Unnecessary load if content changes only once per day 
+
+Quick Comparison 
+
+Strategy 
+
+SEO 
+
+Performance 
+
+Best For 
+
+CSR 
+
+❌ Poor 
+
+Medium 
+
+Dashboards 
+
+SSR 
+
+✅ Good 
+
+Slower 
+
+Frequently changing data 
+
+SSG 
+
+✅ Excellent 
+
+Very Fast 
+
+Static content 
+
+SSG + ISR 
+
+✅ Excellent 
+
+Very Fast 
+
+Occasionally updated content 
+
+
 
