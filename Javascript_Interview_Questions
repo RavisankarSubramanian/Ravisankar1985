@@ -242,4 +242,4 @@ sayHi() {
     console.log(this.name);
   }.bind(this), 1000);
 }
-If you tell me your target level (beginner / intermediate / advanced) and whether you want more on topics like event loop, DOM, or async/await, I can generate another focused set.
+
